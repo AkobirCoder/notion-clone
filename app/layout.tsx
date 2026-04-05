@@ -1,6 +1,7 @@
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Metadata } from "next";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const roboto = Roboto({
     subsets: ["latin"],
@@ -22,8 +23,18 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en" className={`${roboto.variable} h-full`}>
-            <body>{children}</body>
+        <html lang="en" className={`${roboto.variable} h-full`} suppressHydrationWarning>
+            <body suppressHydrationWarning>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                    storageKey="notion-theme"
+                >
+                    {children}
+                </ThemeProvider>
+            </body>
         </html>
     );
 }
