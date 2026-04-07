@@ -4,10 +4,14 @@ import { Button } from '@/components/ui/button';
 
 export const Footer = () => {
     return (
-        <div className='flex items-center w-full p-6 bg-background z-50 border-t shadow-sm mt-10'>
+        <div className='flex flex-col md:flex-row md:items-center w-full p-6 bg-background z-50 border-t shadow-sm mt-10'>
             <Logo />
 
-            <div className='md:ml-auto w-full flex justify-between md:justify-end items-center gap-x-2 text-muted-foreground'>
+            <div className={`
+                w-full flex flex-col items-start mt-4
+                md:flex-row md:justify-end md:items-center gap-x-2 md:ml-auto 
+                text-muted-foreground
+            `}>
                 <Button variant={'ghost'} size={'sm'}>
                     Privacy Policy
                 </Button>
