@@ -1,5 +1,10 @@
+"use client"
+
 import { Button } from '@/components/ui/button';
-import {  Check } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
+import { SignInButton } from '@clerk/clerk-react';
+import { useConvexAuth } from 'convex/react';
+import {  ArrowRight, Check } from 'lucide-react';
 import React from 'react';
 
 interface PricingCardProps {
@@ -10,6 +15,8 @@ interface PricingCardProps {
 }
 
 export const PricingCard = ({title, subtitle, options, price}: PricingCardProps) => {
+    const {isAuthenticated, isLoading} = useConvexAuth();
+
     return (
         <div className={`
             flex flex-col 
@@ -36,9 +43,32 @@ export const PricingCard = ({title, subtitle, options, price}: PricingCardProps)
                 </span>
             </div>
 
-            <Button className='py-5'>
-                Get Started
-            </Button>
+            {
+                isLoading && (
+                    <div className='w-full flex items-center justify-center'>
+                        <Spinner />
+                    </div>
+                )
+            }
+
+            {
+                isAuthenticated && !isLoading && (
+                    <Button className='py-5'>
+                        Get Started
+                    </Button>
+                )
+            }
+            
+            {
+                !isAuthenticated && !isLoading && (
+                    <SignInButton mode="modal">
+                        <Button>
+                            Sign In
+                            <ArrowRight className='h-4 w-4' />
+                        </Button>
+                    </SignInButton>
+                )
+            }
 
             <ul role='list' className='space-y-4 text-left mt-8'>
                 {
