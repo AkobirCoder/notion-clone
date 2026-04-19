@@ -8,7 +8,7 @@ export const Footer = () => {
             <Logo />
 
             <div className={`
-                w-full flex flex-col items-start mt-4
+                w-full flex flex-col items-start
                 md:flex-row md:justify-end md:items-center gap-x-2 md:ml-auto 
                 text-muted-foreground
             `}>
