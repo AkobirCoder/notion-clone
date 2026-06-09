@@ -23,8 +23,8 @@ const DocumentPage = () => {
         <div className='h-screen w-full flex flex-col items-center justify-center space-y-4'>
             <Image 
                 src={'/note.svg'} 
-                alt='Note logo' 
-                width={300} 
+                alt='Note logo'
+                width={300}
                 height={300} 
                 className='object-cover dark:hidden' 
             />
