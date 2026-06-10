@@ -1,13 +1,22 @@
 "use client"
 
 import { cn } from '@/lib/utils';
-import { ChevronsLeft, MenuIcon } from 'lucide-react';
+import { ChevronsLeft, MenuIcon, Plus, Rocket, Search, Settings, Trash } from 'lucide-react';
 import React, { ElementRef, useEffect, useRef, useState } from 'react';
 import { useMediaQuery } from 'usehooks-ts';
 import { DocumentList } from './document-list';
+import { Item } from './item';
+import { api } from '@/convex/_generated/api';
+import { useMutation } from 'convex/react';
+import { UserBox } from './user-box';
+import { Progress } from '@/components/ui/progress';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { TrashBox } from './trash-box';
 
 export const Sidebar = () => {
     const isMobile = useMediaQuery("(max-width: 770px)");
+
+    const createDocument = useMutation(api.document.createDocument);
 
     console.log(isMobile);
 
@@ -98,15 +107,25 @@ export const Sidebar = () => {
         document.removeEventListener('mouseup', handleMouseUp);
     }
 
+    const onCreateDocument = () => {
+        createDocument({
+            title: "Untitled",
+        });
+    }
+
+    const arr = [1];
+
     return (
         <>
             <div 
                 className={cn(`
                     group/sidebar w-60 h-screen 
-                    bg-secondary overflow-y-auto relative 
+                    bg-secondary relative overflow-y-auto
                     flex flex-col z-50
-                `, isResetting && 'transition-all ease-in duration-300'
-                , isMobile && 'w-0')} 
+                `, 
+                isCollapsed ? 'overflow-hidden' : 'overflow-y-auto',
+                isResetting && 'transition-all ease-in duration-300', 
+                isMobile && 'w-0')} 
                 ref={sidebarRef}
             >
                 <div 
@@ -114,7 +133,7 @@ export const Sidebar = () => {
                         h-6 w-6 text-muted-foreground 
                         rounded-sm hover:bg-neutral-300 
                         dark:hover:bg-neutral-600 
-                        absolute top-3 right-3 opacity-0 
+                        absolute top-2.5 right-3 opacity-0 
                         group-hover/sidebar:opacity-100 transition
                         cursor-pointer
                     `, isMobile && 'opacity-100')} 
@@ -125,18 +144,56 @@ export const Sidebar = () => {
                 </div>
 
                 <div>
-                    User Profile Item
+                    <UserBox />
+                    <Item label='Search' icon={Search} />
+                    <Item label='Settings' icon={Settings} />
+                    <Item label='New document' icon={Plus} onClick={onCreateDocument} />
                 </div>
 
                 <div className='mt-4'>
                     <DocumentList />
+                    <Item label='Add a page' icon={Plus} onClick={onCreateDocument} />
+
+                    <Popover>
+                        <PopoverTrigger
+                            className='w-full mt-4'
+                        >
+                            <Item label='Trash' icon={Trash} />
+                        </PopoverTrigger>
+                        <PopoverContent 
+                            className='w-72 p-0'
+                            side={isMobile ? 'bottom' : 'right'}
+                        >
+                            <TrashBox />
+                        </PopoverContent>
+                    </Popover>
                 </div>
 
-                <div className={`
-                    absolute top-0 right-0 w-1 h-full 
-                    cursor-ew-resize bg-primary/10 opacity-0 
-                    group-hover/sidebar:opacity-100 transition
-                `} onMouseDown={handleMouseDown} />
+                <div 
+                    className={`
+                        absolute top-0 right-0 w-1 h-full
+                        cursor-ew-resize bg-primary/10 opacity-0 
+                        group-hover/sidebar:opacity-100 transition
+                    `} 
+                    onMouseDown={handleMouseDown}
+                />
+
+                <div className='absolute bottom-0 px-2 py-4 w-full bg-white/50 dark:bg-black/50'>
+                    <div className='flex justify-between items-center'>
+                        <div className='flex items-center gap-1 text-[13px]'>
+                            <Rocket />
+                            <p className='opacity-70 font-bold'>Free plan</p>
+                        </div>
+                        <p className='text-[13px] opacity-70'>{arr.length}/3</p>
+                    </div>
+
+                    <Progress
+                        value={
+                            arr.length >= 3 ? 100 : arr.length * 33.33
+                        }
+                        className='mt-2 h-2'
+                    />
+                </div>
             </div>
 
             <div 
@@ -151,7 +208,7 @@ export const Sidebar = () => {
                         isCollapsed && (
                             <MenuIcon 
                                 className='h-6 w-6 text-muted-foreground cursor-pointer' 
-                                role='button'     
+                                role='button'  
                                 onClick={reset}
                             />
                         )
