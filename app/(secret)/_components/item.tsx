@@ -4,9 +4,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import { cn } from '@/lib/utils';
 import { useUser } from '@clerk/clerk-react';
 import { useMutation } from 'convex/react';
-import { ChevronDown, ChevronRight, MoreHorizontal, Plus, Trash } from 'lucide-react';
+import { ChevronDown, ChevronRight, LucideIcon, MoreHorizontal, Plus, Trash } from 'lucide-react';
 import React from 'react';
 
 interface ItemProps {
@@ -14,11 +15,15 @@ interface ItemProps {
     label: string,
     level?: number,
     expanded?: boolean,
-    onExpand?: () => void;
-    onRedirect?: () => void;
+    active?: boolean,
+    documentIcon?: string,
+    icon?: LucideIcon,
+    onClick?: () => void,
+    onExpand?: () => void,
+    onRedirect?: () => void,
 }
 
-export const Item = ({id, label, level, expanded, onExpand, onRedirect}: ItemProps) => {
+export const Item = ({id, label, level, expanded, active, documentIcon, icon: Icon, onClick, onExpand, onRedirect}: ItemProps) => {
     const {user} = useUser();
 
     const createDocument = useMutation(api.document.createDocument);
@@ -49,14 +54,18 @@ export const Item = ({id, label, level, expanded, onExpand, onRedirect}: ItemPro
     return (
         <div
             style={{paddingLeft: level ? `${level * 12 + 12}px`: '12px'}}
-            className={`
+            className={cn(`
                 group min-h-6.75 w-full text-sm py-1 pr-3
                 flex items-center
                 text-muted-foreground font-medium
                 hover:bg-primary/5 cursor-pointer
-            `}
+            `, active && "bg-primary/5 text-primary")}
             role="button"
-            onClick={onRedirect}
+            onClick={() => {
+                onClick?.();
+
+                onRedirect?.();
+            }}
         >
             {
                 !!id && (
@@ -67,6 +76,16 @@ export const Item = ({id, label, level, expanded, onExpand, onRedirect}: ItemPro
                     >
                         <ChevronIcon className='h-4 w-4 shrink-0 text-muted-foreground/50' />
                     </div>
+                )
+            }
+
+            {
+                documentIcon ? (
+                    <div className='shrink-0 mr-2 text-[18px]'>
+                        {documentIcon}
+                    </div>
+                ) : Icon && (
+                    <Icon className="shrink-0 h-4.5 w-4.5 mr-2 text-muted-foreground" />
                 )
             }
 
