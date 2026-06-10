@@ -9,7 +9,7 @@ import Image from 'next/image';
 import React from 'react';
 
 const DocumentPage = () => {
-    const {user} = useUser();
+    const { user } = useUser();
 
     const createDocument = useMutation(api.document.createDocument);
 
