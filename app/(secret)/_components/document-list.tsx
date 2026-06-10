@@ -6,7 +6,7 @@ import { useQuery } from 'convex/react';
 import React, { useState } from 'react';
 import { Item } from './item';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 interface DocumentListProps {
     parentDocumentId?: Id<"documents">;
@@ -17,6 +17,8 @@ export const DocumentList = ({parentDocumentId, level = 0}: DocumentListProps) =
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
     const router = useRouter();
+
+    const params = useParams();
 
     const onExpand = (documentId: string) => {
         setExpanded((prevState) => {
@@ -56,7 +58,7 @@ export const DocumentList = ({parentDocumentId, level = 0}: DocumentListProps) =
 
     return (
         <>
-            <p 
+            <p
                 className={
                     cn("hidden text-sm font-medium text-muted-foreground/80", 
                     expanded && "last:block",
@@ -71,7 +73,7 @@ export const DocumentList = ({parentDocumentId, level = 0}: DocumentListProps) =
             {
                 documents.map((document) => {
                     return (
-                        <div 
+                        <div
                             key={document._id}
                         >
                             <Item
@@ -79,6 +81,8 @@ export const DocumentList = ({parentDocumentId, level = 0}: DocumentListProps) =
                                 label={document.title}
                                 level={level}
                                 expanded={expanded[document._id]}
+                                active={params.documentId === document._id}
+                                documentIcon={document.icon}
                                 onExpand={() => onExpand(document._id)}
                                 onRedirect={() => onRedirect(document._id)}
                             />
