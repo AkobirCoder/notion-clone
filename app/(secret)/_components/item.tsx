@@ -1,6 +1,7 @@
 "use client"
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useUser } from '@clerk/clerk-react';
@@ -14,9 +15,10 @@ interface ItemProps {
     level?: number,
     expanded?: boolean,
     onExpand?: () => void;
+    onRedirect?: () => void;
 }
 
-export const Item = ({id, label, level, expanded, onExpand}: ItemProps) => {
+export const Item = ({id, label, level, expanded, onExpand, onRedirect}: ItemProps) => {
     const {user} = useUser();
 
     const createDocument = useMutation(api.document.createDocument);
@@ -51,8 +53,10 @@ export const Item = ({id, label, level, expanded, onExpand}: ItemProps) => {
                 group min-h-6.75 w-full text-sm py-1 pr-3
                 flex items-center
                 text-muted-foreground font-medium
-                hover:bg-primary/5 
+                hover:bg-primary/5 cursor-pointer
             `}
+            role="button"
+            onClick={onRedirect}
         >
             {
                 !!id && (
@@ -117,6 +121,18 @@ export const Item = ({id, label, level, expanded, onExpand}: ItemProps) => {
                     </div>
                 )
             }
+        </div>
+    );
+}
+
+Item.Skeleton = function ItemSkeleton({level}: {level?: number}) {
+    return (
+        <div 
+            style={{paddingLeft: level ? `${level * 12 + 12}px`: '12px'}}
+            className='flex gap-x-2 py-0.75'
+        >   
+            <Skeleton className='h-4 w-4' />
+            <Skeleton className='h-4 w-[30%]' />
         </div>
     );
 }
