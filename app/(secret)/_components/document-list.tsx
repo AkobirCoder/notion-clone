@@ -95,7 +95,7 @@ export const DocumentList = ({parentDocumentId, level = 0}: DocumentListProps) =
                                 )
                             }
                         </div>
-                    )
+                    );
                 })
             }
         </>
