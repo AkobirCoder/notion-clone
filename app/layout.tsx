@@ -3,6 +3,7 @@ import "./globals.css";
 import { Metadata } from "next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
+import { Toaster } from 'sonner';   
 
 const roboto = Roboto({
     subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
                         disableTransitionOnChange
                         storageKey="notion-theme"
                     >
+                        <Toaster position="top-center" />
                         {children}
                     </ThemeProvider>
                 </ConvexClientProvider>
