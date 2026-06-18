@@ -20,13 +20,33 @@ interface ItemProps {
     active?: boolean,
     documentIcon?: string,
     icon?: LucideIcon,
+    // isSearch?: boolean,
+    // isSettings?: boolean,
+    shortcut?: {
+        modifier: string,
+        key: string,
+    },
     onClick?: () => void,
     onExpand?: () => void,
     onRedirect?: () => void,
 }
 
-export const Item = ({id, label, level, expanded, active, documentIcon, icon: Icon, onClick, onExpand, onRedirect}: ItemProps) => {
-    const {user} = useUser();
+export const Item = ({
+    id, 
+    label, 
+    level, 
+    expanded, 
+    active, 
+    documentIcon, 
+    icon: Icon, 
+    // isSearch, 
+    // isSettings,
+    shortcut,
+    onClick, 
+    onExpand, 
+    onRedirect}: ItemProps
+) => {
+    const { user } = useUser();
 
     const router = useRouter();
 
@@ -39,7 +59,9 @@ export const Item = ({id, label, level, expanded, active, documentIcon, icon: Ic
 
         if (!id) return;
 
-        const promise = archiveDocument({id}).then(() => router.push('/documents'));
+        router.push('/documents');
+
+        const promise = archiveDocument({id});
 
         toast.promise(promise, {
             loading: "Archiving document...",
@@ -111,6 +133,51 @@ export const Item = ({id, label, level, expanded, active, documentIcon, icon: Ic
 
             <span className='truncate'>{label}</span>
 
+            {/* {
+                isSearch && (
+                    <kbd
+                        className={`
+                            inline-flex items-center gap-1 ml-auto 
+                            pointer-events-none h-5 select-none rounded border 
+                            bg-muted px-1.5 font-mono text-[10px] 
+                            font-medium text-muted-foreground opacity-100
+                        `}
+                    >
+                        <span>CTRL</span>K
+                    </kbd>
+                )
+            }
+
+            {
+                isSettings && (
+                    <kbd
+                        className={`
+                            inline-flex items-center gap-1 ml-auto 
+                            pointer-events-none h-5 select-none rounded border 
+                            bg-muted px-1.5 font-mono text-[10px] 
+                            font-medium text-muted-foreground opacity-100
+                        `}
+                    >
+                        <span>CTRL</span>M
+                    </kbd>
+                )
+            } */}
+
+            {
+                shortcut && (
+                    <kbd
+                        className={`
+                            inline-flex items-center gap-1 ml-auto 
+                            pointer-events-none h-5 select-none rounded border 
+                            bg-muted px-1.5 font-mono text-[10px] 
+                            font-medium text-muted-foreground opacity-100
+                        `}
+                    >
+                        <span>{shortcut.modifier}</span>{shortcut.key}
+                    </kbd>
+                )
+            }
+
             {
                 !!id && (
                     <div className='ml-auto flex items-center gap-x-2'>
@@ -135,7 +202,7 @@ export const Item = ({id, label, level, expanded, active, documentIcon, icon: Ic
                                 side='right'
                                 forceMount
                             >
-                                <DropdownMenuItem onClick={onArchive}>
+                                <DropdownMenuItem className='cursor-pointer' onClick={onArchive}>
                                     <Trash className='h-4 w-4 mr-2' />
                                     Delete
                                 </DropdownMenuItem>
