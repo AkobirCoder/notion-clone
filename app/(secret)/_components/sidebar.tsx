@@ -12,13 +12,22 @@ import { UserBox } from './user-box';
 import { Progress } from '@/components/ui/progress';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { TrashBox } from './trash-box';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Navbar } from './navbar';
+import { useSearch } from '@/hooks/use-search';
+import { useSettings } from '@/hooks/use-settings';
 
 export const Sidebar = () => {
     const isMobile = useMediaQuery("(max-width: 770px)");
 
     const router = useRouter();
+
+    const params = useParams();
+
+    const search = useSearch();
+
+    const settings = useSettings();
 
     const createDocument = useMutation(api.document.createDocument);
 
@@ -155,9 +164,31 @@ export const Sidebar = () => {
 
                 <div>
                     <UserBox />
-                    <Item label='Search' icon={Search} />
-                    <Item label='Settings' icon={Settings} />
-                    <Item label='New document' icon={Plus} onClick={onCreateDocument} />
+                    <Item 
+                        label='Search' 
+                        icon={Search} 
+                        // isSearch
+                        shortcut={{
+                            modifier: "CTRL",
+                            key: "K"
+                        }}
+                        onClick={() => {search.onOpen()}}
+                    />
+                    <Item 
+                        label='Settings' 
+                        icon={Settings}
+                        // isSettings
+                        shortcut={{
+                            modifier: "CTRL",
+                            key: "M"
+                        }}
+                        onClick={() => settings.onOpen()}
+                    />
+                    <Item 
+                        label='New document' 
+                        icon={Plus} 
+                        onClick={onCreateDocument} 
+                    />
                 </div>
 
                 <div className='mt-4'>
@@ -213,17 +244,23 @@ export const Sidebar = () => {
                 )} 
                 ref={navbarRef}
             >
-                <nav className='bg-transparent px-3 py-2 w-full'>
-                    {
-                        isCollapsed && (
-                            <MenuIcon 
-                                className='h-6 w-6 text-muted-foreground cursor-pointer' 
-                                role='button'  
-                                onClick={reset}
-                            />
-                        )
-                    }
-                </nav>
+                {
+                    !!params.documentId ? (
+                        <Navbar isCollapsed={isCollapsed} reset={reset} />
+                    ) : (
+                        <nav className='bg-transparent px-3 py-2 w-full'>
+                            {
+                                isCollapsed && (
+                                    <MenuIcon 
+                                        className='h-6 w-6 text-muted-foreground cursor-pointer' 
+                                        role='button'  
+                                        onClick={reset}
+                                    />
+                                )
+                            }
+                        </nav>
+                    )
+                }
             </div>
         </>
     );
