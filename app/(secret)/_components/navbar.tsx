@@ -1,4 +1,3 @@
-import { Spinner } from '@/components/ui/spinner';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 import { useQuery } from 'convex/react';
@@ -6,6 +5,9 @@ import { MenuIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import { Title } from './title';
+import { Publish } from './publish';
+import { Menu } from './menu';
+import { Banner } from './banner';
 
 interface NavbarProps {
     isCollapsed: boolean,
@@ -24,7 +26,7 @@ export const Navbar = ({isCollapsed, reset}: NavbarProps) => {
             <nav className='flex items-center justify-between w-full px-3 py-2 bg-background'>
                 <Title.Skeleton />
                 <div className='flex items-center gap-x-2'>
-                    <Spinner />
+                    <Menu.Skeleton />
                 </div>
             </nav>
         );
@@ -49,10 +51,23 @@ export const Navbar = ({isCollapsed, reset}: NavbarProps) => {
                 <div className='flex items-center justify-between w-full'>
                     <Title document={document} />
                     <div className='flex items-center gap-x-2'>
-
+                        {
+                            !document.isArchived && (
+                                <>
+                                    <Publish document={document} />
+                                    <Menu documentId={document._id} />
+                                </>
+                            )
+                        }
                     </div>
                 </div>
             </nav>
+
+            {
+                document.isArchived && (
+                    <Banner documentId={document._id} />
+                )
+            }
         </>
     );
 }
