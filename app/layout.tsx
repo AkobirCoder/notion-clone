@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
 import { Toaster } from 'sonner';   
+import ModalProvider from "@/components/providers/modal-provider";
 
 const roboto = Roboto({
     subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
                         storageKey="notion-theme"
                     >
                         <Toaster position="top-center" />
+                        <ModalProvider />
                         {children}
                     </ThemeProvider>
                 </ConvexClientProvider>
