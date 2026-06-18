@@ -6,6 +6,7 @@ import { useConvexAuth } from 'convex/react';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { Sidebar } from './_components';
+import { SearchCommand } from '@/components/shared/search-command';
 
 const SecretLayout = ({children}: ChildProps) => {
     const {isAuthenticated, isLoading} = useConvexAuth();
@@ -26,6 +27,7 @@ const SecretLayout = ({children}: ChildProps) => {
         <div className='w-full flex'>
             <Sidebar />
             <main className='h-full flex-1 overflow-y-auto'>
+                <SearchCommand />
                 {children}
             </main>
         </div>
