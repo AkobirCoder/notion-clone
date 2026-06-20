@@ -1,3 +1,5 @@
+"use client"
+
 import { useSettings } from '@/hooks/use-settings';
 import React, { useEffect } from 'react';
 import SettingsModal from '../modals/settings-modal';
