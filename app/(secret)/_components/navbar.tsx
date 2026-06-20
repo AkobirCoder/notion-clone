@@ -38,7 +38,7 @@ export const Navbar = ({isCollapsed, reset}: NavbarProps) => {
 
     return (
         <>
-            <nav className='flex items-center gap-x-4 w-full px-3 py-2 bg-background'>
+            <nav className='flex items-center gap-x-4 w-full px-3 py-2 bg-accent'>
                 {
                     isCollapsed && (
                         <MenuIcon
