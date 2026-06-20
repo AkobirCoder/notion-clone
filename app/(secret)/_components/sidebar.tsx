@@ -139,7 +139,7 @@ export const Sidebar = () => {
             <div 
                 className={cn(`
                     group/sidebar w-60 h-screen 
-                    bg-secondary relative overflow-y-auto
+                    bg-secondary fixed overflow-y-auto
                     flex flex-col z-50
                 `, 
                 isCollapsed ? 'overflow-hidden' : 'overflow-y-auto',
