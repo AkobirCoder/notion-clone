@@ -173,7 +173,8 @@ export const Item = ({
                             font-medium text-muted-foreground opacity-100
                         `}
                     >
-                        <span>{shortcut.modifier}</span>{shortcut.key}
+                        <span>{shortcut.modifier}</span>
+                        {shortcut.key}
                     </kbd>
                 )
             }
