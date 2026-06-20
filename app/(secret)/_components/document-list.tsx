@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Item } from './item';
 import { cn } from '@/lib/utils';
 import { useParams, useRouter } from 'next/navigation';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface DocumentListProps {
     parentDocumentId?: Id<"documents">;
@@ -70,34 +71,36 @@ export const DocumentList = ({parentDocumentId, level = 0}: DocumentListProps) =
             >
                 No documents found.
             </p>
-            {
-                documents.map((document) => {
-                    return (
-                        <div
-                            key={document._id}
-                        >
-                            <Item
-                                id={document._id}
-                                label={document.title}
-                                level={level}
-                                expanded={expanded[document._id]}
-                                active={params.documentId === document._id}
-                                documentIcon={document.icon}
-                                onExpand={() => onExpand(document._id)}
-                                onRedirect={() => onRedirect(document._id)}
-                            />
-                            {
-                                expanded[document._id] && (
-                                    <DocumentList 
-                                        parentDocumentId={document._id} 
-                                        level={level + 1}
-                                    />
-                                )
-                            }
-                        </div>
-                    );
-                })
-            }
+            <ScrollArea className='h-110 w-59'>
+                {
+                    documents.map((document) => {
+                        return (
+                            <div
+                                key={document._id}
+                            >
+                                <Item
+                                    id={document._id}
+                                    label={document.title}
+                                    level={level}
+                                    expanded={expanded[document._id]}
+                                    active={params.documentId === document._id}
+                                    documentIcon={document.icon}
+                                    onExpand={() => onExpand(document._id)}
+                                    onRedirect={() => onRedirect(document._id)}
+                                />
+                                {
+                                    expanded[document._id] && (
+                                        <DocumentList 
+                                            parentDocumentId={document._id} 
+                                            level={level + 1}
+                                        />
+                                    )
+                                }
+                            </div>
+                        );
+                    })
+                }
+            </ScrollArea> 
         </>
     );
 }
