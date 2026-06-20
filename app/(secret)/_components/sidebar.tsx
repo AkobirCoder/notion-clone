@@ -64,7 +64,7 @@ export const Sidebar = () => {
             navbarRef.current.style.left = "0";
 
             setTimeout(() => setIsResetting(false), 300);
-        } 
+        }
     }
 
     const reset = () => {
