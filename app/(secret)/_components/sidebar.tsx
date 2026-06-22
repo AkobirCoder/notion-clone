@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { Navbar } from './navbar';
 import { useSearch } from '@/hooks/use-search';
 import { useSettings } from '@/hooks/use-settings';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const Sidebar = () => {
     const isMobile = useMediaQuery("(max-width: 770px)");
@@ -31,7 +32,7 @@ export const Sidebar = () => {
 
     const createDocument = useMutation(api.document.createDocument);
 
-    console.log(isMobile);
+    // console.log(isMobile);
 
     const sidebarRef = useRef<ElementRef<"div">>(null);
 
@@ -138,8 +139,8 @@ export const Sidebar = () => {
         <>
             <div 
                 className={cn(`
-                    group/sidebar w-60 h-screen 
-                    bg-secondary fixed overflow-y-auto
+                    group/sidebar w-60 h-screen
+                    bg-secondary sticky top-0 left-0 overflow-y-auto
                     flex flex-col z-50
                 `, 
                 isCollapsed ? 'overflow-hidden' : 'overflow-y-auto',
@@ -201,7 +202,7 @@ export const Sidebar = () => {
                         >
                             <Item label='Trash' icon={Trash} />
                         </PopoverTrigger>
-                        <PopoverContent 
+                        <PopoverContent
                             className='w-72 p-0'
                             side={isMobile ? 'bottom' : 'right'}
                         >
