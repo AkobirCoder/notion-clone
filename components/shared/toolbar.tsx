@@ -8,6 +8,8 @@ import IconPicker from './icon-picker';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import TextareaAutosize from 'react-textarea-autosize';
+import { useCoverImage } from '@/hooks/use-cover-image';
+import { cn } from '@/lib/utils';
 
 interface ToolbarProps {
     document: Doc<"documents">,
@@ -22,6 +24,8 @@ export const Toolbar = ({document, preview}: ToolbarProps) => {
     const [isEditing, setIsEditing] = useState(false);
 
     const updateFields = useMutation(api.document.updateFields);
+
+    const coverImage = useCoverImage();
 
     const onIconChange = (icon: string) => {
         updateFields({
@@ -73,7 +77,7 @@ export const Toolbar = ({document, preview}: ToolbarProps) => {
     }
 
     return (
-        <div className='relative pl-13.5 group'>
+        <div className={cn('relative top-12 pl-13.5 group', preview && 'top-0')}>
             {
                 !!document.icon && !preview && (
                     <div className='flex items-center gap-x-2 group/icon pt-6'>
@@ -123,6 +127,7 @@ export const Toolbar = ({document, preview}: ToolbarProps) => {
                             size={"sm"}
                             variant={"outline"}
                             className='text-muted-foreground text-xs cursor-pointer'
+                            onClick={coverImage.onOpen}
                         >
                             <ImageIcon className='h-4 w-4 mr-2' />
                             <span>Add cover</span>
