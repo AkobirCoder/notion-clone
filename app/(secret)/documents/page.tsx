@@ -49,6 +49,7 @@ const DocumentPage = () => {
                 Welcome to {user?.firstName}`s document page!
             </h2>
             <Button
+                className='cursor-pointer'
                 onClick={onCreateDocument}
             >
                 <Plus className='h-4 w-4 mr-2' />
