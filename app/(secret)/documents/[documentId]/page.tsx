@@ -56,7 +56,7 @@ const DocumentIdPage = () => {
 
     return (
         <div className='pb-40'>
-            <Cover url={'https://images.unsplash.com/photo-1542903660-eedba2cda473?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&w=4800'} />
+            <Cover url={document.coverImage} />
 
             <div className='md:max-w-3xl lg:max-w-4xl mx-auto'>
                 <Toolbar document={document} />
