@@ -64,17 +64,15 @@ export const TrashBox = () => {
                 <Search className='w-4 h-4 mr-1' />
                 <Input
                     className='h-7 px-2 focus-visible:ring-transparent bg-secondary'
-                    placeholder='Filter by page title...' 
+                    placeholder='Filter by page title...'
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                 />
             </div>
-
             <div className='mt-2 px-1 pb-1'>
                 <p className='hidden last:block text-xs text-center text-muted-foreground pb-2'>
                     No documents in trash
                 </p>
-
                 {
                     filteredDocuments.map((document) => {
                         return (
@@ -86,19 +84,19 @@ export const TrashBox = () => {
                             >
                                 <span className='truncate pl-2'>{document.title}</span>
                                 <div className='flex items-center'>
-                                    <div 
+                                    <div
                                         className='rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600'
                                         role="button"
                                     >
-                                        <Undo 
-                                            className='h-4 w-4 text-muted-foreground' 
+                                        <Undo
+                                            className='h-4 w-4 text-muted-foreground'
                                             onClick={() => onRestore(document._id)}
                                         />
                                     </div>
                                     <ConfirmModal onConfirm={() => onRemove(document._id)}>
-                                        <div 
+                                        <div
                                             className='rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600'
-                                            role="button"    
+                                            role="button"
                                         >
                                             <Trash className='h-4 w-4 text-muted-foreground' />
                                         </div>
