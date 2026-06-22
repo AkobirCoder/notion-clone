@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import EmojiPicker, { Theme } from 'emoji-picker-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
