@@ -53,7 +53,7 @@ export const PricingCard = ({title, subtitle, options, price}: PricingCardProps)
 
             {
                 isAuthenticated && !isLoading && (
-                    <Button className='py-5'>
+                    <Button className='py-5 cursor-pointer'>
                         Get Started
                     </Button>
                 )
