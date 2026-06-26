@@ -2,21 +2,60 @@
 
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { SignInButton } from '@clerk/clerk-react';
+import { SignInButton, useUser } from '@clerk/clerk-react';
 import { useConvexAuth } from 'convex/react';
 import {  ArrowRight, Check } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 interface PricingCardProps {
     title: string,
     subtitle: string,
     options: string,
     price: string,
+    priceId?: string,
 }
 
-export const PricingCard = ({title, subtitle, options, price}: PricingCardProps) => {
+export const PricingCard = ({title, subtitle, options, price, priceId}: PricingCardProps) => {
     const {isAuthenticated, isLoading} = useConvexAuth();
 
+    const {user} = useUser();
+
+    const router = useRouter();
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    console.log(priceId);
+
+    const onSubmit = async () => {
+        if (price === "Free") {
+            router.push('/documents');
+
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const {data} = await axios.post('/api/stripe/subscription', {
+                priceId,
+                email: user?.emailAddresses[0].emailAddress,
+                userId: user?.id,
+            });
+
+            // console.log(data);
+
+            window.open(data, "_self");
+
+            setIsSubmitting(false);
+        } catch (error) {
+            setIsSubmitting(false);
+
+            toast.error("Something went wrong. Please try again.");
+        }
+    }
     return (
         <div className={`
             flex flex-col 
@@ -53,8 +92,21 @@ export const PricingCard = ({title, subtitle, options, price}: PricingCardProps)
 
             {
                 isAuthenticated && !isLoading && (
-                    <Button className='py-5 cursor-pointer'>
-                        Get Started
+                    <Button 
+                        className='py-5 cursor-pointer'
+                        disabled={isSubmitting}
+                        onClick={onSubmit}
+                    >
+                        {
+                            isSubmitting ? (
+                                <>
+                                    <Spinner />
+                                    <span className='ml-2'>Submitting</span>
+                                </>
+                            ) : (
+                                "Get Started"
+                            )
+                        }
                     </Button>
                 )
             }
