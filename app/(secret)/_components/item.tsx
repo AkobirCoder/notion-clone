@@ -59,9 +59,9 @@ export const Item = ({
 
         if (!id) return;
 
-        router.push('/documents');
-
         const promise = archiveDocument({id});
+
+        router.push('/documents');
 
         toast.promise(promise, {
             loading: "Archiving document...",
