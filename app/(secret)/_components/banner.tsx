@@ -9,7 +9,6 @@ import { useMutation, useQuery } from 'convex/react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { email } from 'zod';
 
 interface BannerProps {
     documentId: Id<"documents">,
