@@ -50,7 +50,7 @@ export const PricingCard = ({title, subtitle, options, price, priceId}: PricingC
             window.open(data, "_self");
 
             setIsSubmitting(false);
-        } catch (error) {
+        } catch {
             setIsSubmitting(false);
 
             toast.error("Something went wrong. Please try again.");
