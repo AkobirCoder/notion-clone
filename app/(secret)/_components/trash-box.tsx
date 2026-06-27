@@ -3,6 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import useSubscription from '@/hooks/use-subscription';
+import { useUser } from '@clerk/clerk-react';
 import { useMutation, useQuery } from 'convex/react';
 import { Search, Trash, Undo } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -14,11 +16,17 @@ export const TrashBox = () => {
 
     const params = useParams();
 
+    const { user } = useUser();
+
     const documents = useQuery(api.document.getTrashDocuments);
 
     const removeDocument = useMutation(api.document.removeDocument);
 
     const restoreDocument = useMutation(api.document.restoreDocument);
+
+    const allDocuments = useQuery(api.document.getAllDocuments);
+
+    const { plan } = useSubscription(user?.emailAddresses[0]?.emailAddress!);
 
     const [search, setSearch] = useState('');
 
@@ -34,6 +42,24 @@ export const TrashBox = () => {
         return document.title.toLocaleLowerCase().includes(search.toLocaleLowerCase());
     });
 
+    const onRestore = (documentId: Id<"documents">) => {
+        if (allDocuments?.length && allDocuments.length >= 3 && plan === "Free") {
+            toast.error(
+                "You already have 3 notes. Please delete one to restore this note"
+            );
+
+            return;
+        }
+
+        const promise = restoreDocument({id: documentId});
+
+        toast.promise(promise, {
+            loading: "Restoring document...",
+            success: "Restored document!",
+            error: "Failed to restore document",
+        });
+    }
+
     const onRemove = (documentId: Id<"documents">) => {
         const promise = removeDocument({id: documentId});
 
@@ -46,16 +72,6 @@ export const TrashBox = () => {
         if (params.documentId === documentId) {
             router.push('/documents');
         }
-    }
-
-    const onRestore = (documentId: Id<"documents">) => {
-        const promise = restoreDocument({id: documentId});
-
-        toast.promise(promise, {
-            loading: "Restoring document...",
-            success: "Restored document!",
-            error: "Failed to restore document",
-        });
     }
 
     return (
