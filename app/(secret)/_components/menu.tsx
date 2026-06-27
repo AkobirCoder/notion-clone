@@ -44,7 +44,7 @@ export const Menu = ({documentId}: MenuProps) => {
                 onClick={(event) => event.stopPropagation()}
             >
                 <Button
-                    className=''
+                    className='cursor-pointer'
                     size={"sm"}
                     variant={"ghost"}
                 >
