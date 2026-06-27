@@ -7,7 +7,7 @@ import { useMediaQuery } from 'usehooks-ts';
 import { DocumentList } from './document-list';
 import { Item } from './item';
 import { api } from '@/convex/_generated/api';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { UserBox } from './user-box';
 import { Progress } from '@/components/ui/progress';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -17,7 +17,10 @@ import { toast } from 'sonner';
 import { Navbar } from './navbar';
 import { useSearch } from '@/hooks/use-search';
 import { useSettings } from '@/hooks/use-settings';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import useSubscription from '@/hooks/use-subscription';
+import { useUser } from '@clerk/clerk-react';
+import { Id } from '@/convex/_generated/dataModel';
+import { Spinner } from '@/components/ui/spinner';
 
 export const Sidebar = () => {
     const isMobile = useMediaQuery("(max-width: 770px)");
@@ -30,9 +33,19 @@ export const Sidebar = () => {
 
     const settings = useSettings();
 
+    const { user } = useUser();
+
     const createDocument = useMutation(api.document.createDocument);
 
+    const documents = useQuery(api.document.getAllDocuments);
+
     // console.log(isMobile);
+
+    const { isLoading, plan } = useSubscription(user?.emailAddresses[0]?.emailAddress!);
+
+    // console.log(plan);
+
+    // console.log(isLoading);
 
     const sidebarRef = useRef<ElementRef<"div">>(null);
 
@@ -122,6 +135,12 @@ export const Sidebar = () => {
     }
 
     const onCreateDocument = () => {
+        if (documents?.length && documents.length >= 3 && plan === "Free") {
+            toast.error("You can only create 3 documents in the free plan");
+
+            return;
+        }
+
         const promise = createDocument({
             title: "Untitled",
         }).then((docId) => router.push(`/documents/${docId}`));
@@ -133,7 +152,7 @@ export const Sidebar = () => {
         });
     }
 
-    const arr = [1];
+    // const arr = [1];
 
     return (
         <>
@@ -221,20 +240,42 @@ export const Sidebar = () => {
                 />
 
                 <div className='absolute bottom-0 px-2 py-4 w-full bg-white/50 dark:bg-black/50'>
-                    <div className='flex justify-between items-center'>
-                        <div className='flex items-center gap-1 text-[13px]'>
-                            <Rocket />
-                            <p className='opacity-70 font-bold'>Free plan</p>
-                        </div>
-                        <p className='text-[13px] opacity-70'>{arr.length}/3</p>
-                    </div>
+                    {
+                        isLoading ? (
+                            <div className='flex items-center justify-center w-full'>
+                                <Spinner />
+                            </div>
+                        ) : (
+                            <>
+                                <div className='flex justify-between items-center'>
+                                    <div className='flex items-center gap-1 text-[13px]'>
+                                        <Rocket />
+                                        <p className='opacity-70 font-bold'>{plan} plan</p>
+                                    </div>
+                                    {
+                                        plan === "Free" ? (
+                                            <p className='text-[13px] opacity-70'>{documents?.length}/3</p>
+                                        ) : (
+                                            <p className='text-[13px] opacity-70'>{documents?.length} notes</p>
+                                        )
+                                    }
+                                </div>
 
-                    <Progress
-                        value={
-                            arr.length >= 3 ? 100 : arr.length * 33.33
-                        }
-                        className='mt-2 h-2'
-                    />
+                                {
+                                    plan === "Free" && (
+                                        <Progress
+                                            value={
+                                                documents?.length && documents.length >= 3 
+                                                    ? 100 
+                                                    : (documents?.length || 0) * 33.33
+                                            }
+                                            className='mt-2 h-2'
+                                        />
+                                    )
+                                }
+                            </>
+                        )
+                    }
                 </div>
             </div>
 
