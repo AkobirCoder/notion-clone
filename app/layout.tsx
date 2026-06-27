@@ -15,7 +15,7 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
     title: "Notion clone",
-    description: "Notion clone created by AkobirCoder",
+    description: "A new tool that blends your everyday work apps into one. It's the all-in-one workspace for you and your team. Notion clone created by AkobirCoder",
     icons: {
         icon: '/logo.svg',
     },
