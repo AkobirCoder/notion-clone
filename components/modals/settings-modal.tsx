@@ -9,16 +9,52 @@ import {
     // DialogTrigger,
 } from "@/components/ui/dialog";
 import { useSettings } from "@/hooks/use-settings";
-import React from 'react';
+import React, { useState } from 'react';
 import { ModeToggle } from "../shared/mode-toggle";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { Settings2 } from "lucide-react";
+import axios from "axios";
+import { useUser } from "@clerk/clerk-react";
+import { toast } from "sonner";
+import { Spinner } from "../ui/spinner";
 
 const SettingsModal = () => {
+    const { user } = useUser();
+
     const settings = useSettings();
 
     const {isOpen, onClose} = settings;
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const onSubmit = async () => {
+        setIsSubmitting(true);
+
+        try {
+            const {data} = await axios.post('/api/stripe/manage', {
+                email: user?.emailAddresses[0].emailAddress,
+            });
+
+            if (!data.status) {
+                setIsSubmitting(false);
+
+                toast.error("You are not subscribed to any plan.");
+
+                return;
+            }
+
+            // console.log(data);
+
+            window.open(data.url, "_self");
+
+            setIsSubmitting(false);
+        } catch {
+            setIsSubmitting(false);
+
+            toast.error("Something went wrong. Please try again.");
+        }
+    }
 
     return (
         <Dialog
@@ -45,8 +81,17 @@ const SettingsModal = () => {
                             Manage your subscription and billing information
                         </span>
                     </div>
-                    <Button className="cursor-pointer">
-                        <Settings2 />
+                    <Button 
+                        className="cursor-pointer" 
+                        onClick={onSubmit}
+                    >
+                        {
+                            isSubmitting ? (
+                                <Spinner />
+                            ) : (
+                                <Settings2 />
+                            )
+                        }
                     </Button>
                 </div>
             </DialogContent>
