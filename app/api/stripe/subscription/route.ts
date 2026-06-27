@@ -41,7 +41,7 @@ export async function POST(req: Request) {
                     quantity: 1,
                 }],
                 customer: customer.id,
-                success_url: `${public_domain}/documents?`,
+                success_url: `${public_domain}/documents`,
                 cancel_url: `${public_domain}`,
             });
 
@@ -56,6 +56,35 @@ export async function POST(req: Request) {
         }   
     } catch (error) {
         return NextResponse.json(`Something went wrong. Please try again. - ${error}`, {
+            status: 500,
+        });
+    }
+}
+
+export async function GET(req: Request) {
+    try {
+        const {searchParams} = new URL(req.url);
+
+        const email = searchParams.get("email");
+
+        const customer = await stripe.customers.list({email: email!});
+
+        if (!customer.data.length) {
+            return NextResponse.json("Free");
+        }
+
+        const subscriptions: any = await stripe.subscriptions.list({
+            customer: customer.data[0].id,
+            expand: ["data.plan.product"],
+        });
+
+        if (!subscriptions.data.length) {
+            return NextResponse.json("Free");
+        }
+
+        return NextResponse.json(subscriptions.data[0].plan.product.name);
+    } catch (error) {
+        return NextResponse.json(`Something went wrong. PLease try again. - ${error}`, {
             status: 500,
         });
     }
