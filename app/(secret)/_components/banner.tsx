@@ -1,11 +1,15 @@
 import ConfirmModal from '@/components/modals/confirm-modal';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
-import { useMutation } from 'convex/react';
+import useSubscription from '@/hooks/use-subscription';
+import { useUser } from '@clerk/clerk-react';
+import { useMutation, useQuery } from 'convex/react';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { email } from 'zod';
 
 interface BannerProps {
     documentId: Id<"documents">,
@@ -14,9 +18,39 @@ interface BannerProps {
 export const Banner = ({documentId}: BannerProps) => {
     const router = useRouter();
 
+    const { user } = useUser();
+
     const removeDocument = useMutation(api.document.removeDocument);
 
     const restoreDocument = useMutation(api.document.restoreDocument);
+
+    const allDocuments = useQuery(api.document.getAllDocuments);
+
+    const { isLoading, plan } = useSubscription(user?.emailAddresses[0]?.emailAddress!);
+
+    const [isRestoring, setIsRestoring] = useState(false);
+
+    const onRestore = () => {
+        if (allDocuments?.length && allDocuments.length >= 3 && plan === "Free") {
+            toast.error(
+                "You already have 3 notes. Please delete one to restore this note"
+            );
+
+            return;
+        }
+
+        setIsRestoring(true);
+
+        const promise = restoreDocument({id: documentId}).finally(() => setIsRestoring(false));
+
+        toast.promise(promise, {
+            loading: "Restoring document...",
+            success: "Restored document!",
+            error: "Failed to restore document",
+        });
+
+        router.push(`/documents/${documentId}`);
+    }
 
     const onRemove = (documentId: Id<"documents">) => {
         const promise = removeDocument({id: documentId});
@@ -28,18 +62,6 @@ export const Banner = ({documentId}: BannerProps) => {
         });
 
         router.push('/documents');
-    }
-
-    const onRestore = () => {
-        const promise = restoreDocument({id: documentId});
-
-        toast.promise(promise, {
-            loading: "Restoring document...",
-            success: "Restored document!",
-            error: "Failed to restore document",
-        });
-
-        router.push(`/documents/${documentId}`);
     }
 
     return (
@@ -54,9 +76,21 @@ export const Banner = ({documentId}: BannerProps) => {
                 `}
                 size={"sm"}
                 variant={"outline"}
+                disabled={isLoading}
                 onClick={onRestore}
             >
-                Restore document
+                {
+                    isRestoring ? (
+                        <>
+                            <Spinner />
+                            <span className='ml-2'>Restoring...</span>
+                        </>
+                    ) : (
+                        <>
+                            Restore document
+                        </>
+                    )
+                }
             </Button>
             <ConfirmModal onConfirm={() => onRemove(documentId)}>
                 <Button
